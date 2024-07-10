@@ -3,6 +3,7 @@ using EFT.InventoryLogic;
 using System.Text;
 
 using SlotItemAddress = GClass2783;
+using EmptyAddress = GClass2782;
 
 namespace DebugTooltip
 {
@@ -50,9 +51,9 @@ namespace DebugTooltip
                 sb.AppendFormat("<color=#00ffff>{0}</color>\n", slotAddress.Slot.ParentItem.Name.Localized());
                 sb.AppendFormat("<color=#00ffff>{0}</color>\n", slotAddress.Slot.ParentItem.Id);
             }
-            else
+            else if (item.CurrentAddress is not EmptyAddress)
             {
-                sb.AppendFormat("Address: <color=red>{0}</color>\n", item.CurrentAddress.ToString());
+                sb.AppendFormat("Address: <color=red>{0}</color>\n", item.CurrentAddress);
             }
 
             return sb.ToString();
