@@ -13,6 +13,7 @@ namespace DebugTooltip
             new GridItemViewPatch().Enable();
             new TradingItemViewPatch().Enable();
             new ModSlotViewPatch().Enable();
+            new ModSlotArmorPatch().Enable();
         }
 
         private class GridItemViewPatch : ModulePatch
@@ -85,6 +86,28 @@ namespace DebugTooltip
                 if (__instance.ContainedItemView == null && !ItemUiContext.Instance.Tooltip.isActiveAndEnabled)
                 {
                     ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                }
+            }
+        }
+
+        private class ModSlotArmorPatch : ModulePatch
+        {
+            protected override MethodBase GetTargetMethod()
+            {
+                return AccessTools.Method(typeof(ModSlotView), nameof(ModSlotView.method_16));
+            }
+
+            [PatchPostfix]
+            public static void Postfix(ModSlotView __instance, ref bool __result)
+            {
+                if (!Settings.ShowDebugInfo.Value)
+                {
+                    return;
+                }
+
+                if (__result)
+                {
+                    DebugTooltip.SetDebugInfo(new ItemDebugInfo(__instance.Slot.ContainedItem));
                 }
             }
         }
