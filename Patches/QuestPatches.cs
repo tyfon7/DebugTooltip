@@ -24,17 +24,15 @@ namespace DebugTooltip
             [PatchPostfix]
             public static void Postfix(QuestListItem __instance, QuestClass quest)
             {
-                if (!Settings.ShowDebugInfo.Value)
-                {
-                    return;
-                }
-
                 var hoverTrigger = __instance.GetOrAddComponent<HoverTrigger>();
 
                 void OnHoverStart(PointerEventData eventData)
                 {
-                    DebugTooltip.SetDebugInfo(new QuestDebugInfo(quest));
-                    ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                    if (Settings.ShowDebugInfo.Value)
+                    {
+                        DebugTooltip.SetDebugInfo(new QuestDebugInfo(quest));
+                        ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                    }
                 }
 
                 hoverTrigger.OnHoverStart += OnHoverStart;
@@ -60,17 +58,15 @@ namespace DebugTooltip
             [PatchPostfix]
             public static void Postfix(NotesTask __instance, QuestClass quest)
             {
-                if (!Settings.ShowDebugInfo.Value)
-                {
-                    return;
-                }
-
                 var hoverTrigger = __instance.GetOrAddComponent<HoverTrigger>();
 
                 void OnHoverStart(PointerEventData eventData)
                 {
-                    DebugTooltip.SetDebugInfo(new QuestDebugInfo(quest));
-                    ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                    if (Settings.ShowDebugInfo.Value)
+                    {
+                        DebugTooltip.SetDebugInfo(new QuestDebugInfo(quest));
+                        ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                    }
                 }
 
                 hoverTrigger.OnHoverStart += OnHoverStart;

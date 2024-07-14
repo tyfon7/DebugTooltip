@@ -3,6 +3,7 @@ using EFT.UI.DragAndDrop;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
+using UnityEngine.EventSystems;
 
 namespace DebugTooltip
 {
@@ -12,6 +13,7 @@ namespace DebugTooltip
         {
             new GridItemViewPatch().Enable();
             new TradingItemViewPatch().Enable();
+            new SlotViewPatch().Enable();
             new ModSlotViewPatch().Enable();
             new ModSlotArmorPatch().Enable();
         }
@@ -51,6 +53,40 @@ namespace DebugTooltip
                 }
 
                 DebugTooltip.SetDebugInfo(new ItemDebugInfo(__instance.Item));
+            }
+        }
+
+        public class SlotViewPatch : ModulePatch
+        {
+            protected override MethodBase GetTargetMethod()
+            {
+                return AccessTools.Method(typeof(SlotView), nameof(SlotView.Show));
+            }
+
+            [PatchPostfix]
+            public static void Postfix(SlotView __instance)
+            {
+                var hoverTrigger = __instance.GetOrAddComponent<HoverTrigger>();
+
+                void OnHoverStart(PointerEventData eventData)
+                {
+                    if (Settings.ShowDebugInfo.Value && __instance.Slot.ContainedItem == null)
+                    {
+                        DebugTooltip.SetDebugInfo(new EmptySlotDebugInfo(__instance.Slot));
+                        ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                    }
+                }
+
+                hoverTrigger.OnHoverStart += OnHoverStart;
+                new R.UIElement(__instance).UI.AddDisposable(() => hoverTrigger.OnHoverStart -= OnHoverStart);
+
+                hoverTrigger.OnHoverEnd -= OnHoverEnd;
+                hoverTrigger.OnHoverEnd += OnHoverEnd;
+            }
+
+            private static void OnHoverEnd(PointerEventData eventData)
+            {
+                ItemUiContext.Instance.Tooltip.Close();
             }
         }
 

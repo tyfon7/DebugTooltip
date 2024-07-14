@@ -7,7 +7,7 @@ using EmptyAddress = GClass2782;
 
 namespace DebugTooltip
 {
-    public abstract class DebugInfo() 
+    public abstract class DebugInfo()
     {
         public virtual string ToShortString()
         {
