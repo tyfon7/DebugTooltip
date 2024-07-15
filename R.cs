@@ -58,7 +58,7 @@ namespace DebugTooltip
         }
     }
 
-    public static class RExtentensions
+    internal static class RExtentensions
     {
     }
 }

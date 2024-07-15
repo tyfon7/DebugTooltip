@@ -1,8 +1,11 @@
-﻿using EFT.UI;
+﻿using EFT.InventoryLogic;
+using EFT.UI;
 using EFT.UI.DragAndDrop;
+using EFT.UI.WeaponModding;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace DebugTooltip
@@ -16,6 +19,7 @@ namespace DebugTooltip
             new SlotViewPatch().Enable();
             new ModSlotViewPatch().Enable();
             new ModSlotArmorPatch().Enable();
+            new ModdingScreenSlotViewPatch().Enable();
         }
 
         private class GridItemViewPatch : ModulePatch
@@ -145,6 +149,44 @@ namespace DebugTooltip
                 {
                     DebugTooltip.SetDebugInfo(new ItemDebugInfo(__instance.Slot.ContainedItem));
                 }
+            }
+        }
+
+        private class ModdingScreenSlotViewPatch : ModulePatch
+        {
+            protected override MethodBase GetTargetMethod()
+            {
+                return AccessTools.Method(typeof(ModdingScreenSlotView), nameof(ModdingScreenSlotView.Start));
+            }
+
+            [PatchPostfix]
+            public static void Postfix(ModdingScreenSlotView __instance, RectTransform ____tooltipHoverArea, Slot ___slot_0)
+            {
+                var hoverTrigger = ____tooltipHoverArea.GetComponent<HoverTrigger>();
+                if (hoverTrigger == null)
+                {
+                    return;
+                }
+
+                void OnHoverStart(PointerEventData eventData)
+                {
+                    if (Settings.ShowDebugInfo.Value && ___slot_0.ContainedItem == null)
+                    {
+                        DebugTooltip.SetDebugInfo(new EmptySlotDebugInfo(___slot_0));
+                        ItemUiContext.Instance.Tooltip.Show(string.Empty);
+                    }
+                }
+
+                hoverTrigger.OnHoverStart += OnHoverStart;
+                new R.UIElement(__instance).UI.AddDisposable(() => hoverTrigger.OnHoverStart -= OnHoverStart);
+
+                hoverTrigger.OnHoverEnd -= OnHoverEnd;
+                hoverTrigger.OnHoverEnd += OnHoverEnd;
+            }
+
+            private static void OnHoverEnd(PointerEventData eventData)
+            {
+                ItemUiContext.Instance.Tooltip.Close();
             }
         }
     }
