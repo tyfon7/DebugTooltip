@@ -1,7 +1,9 @@
 ﻿using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
+using System;
 using System.Reflection;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -9,8 +11,6 @@ namespace DebugTooltip
 {
     internal static class TooltipPatches
     {
-        private const string CopyHint = "<color=grey>ctrl-c to copy ID, ctrl-shift-c to copy all</color>";
-
         public static void Enable()
         {
             new TooltipPatch().Enable();
@@ -45,22 +45,36 @@ namespace DebugTooltip
                     Copier = __instance.GetOrAddComponent<TooltipCopier>();
                 }
 
-                Copier.SetText(debugInfo.ToShortString(), debugInfo.ToString());
+                Copier.SetDebugInfo(debugInfo);
 
                 // Ain't nobody got time for that
                 delay = 0f;
 
+                StringBuilder sb = new();
+
                 if (!string.IsNullOrEmpty(text))
                 {
-                    text += "\n\n";
+                    sb.AppendLine();
+                    sb.AppendLine();
                 }
 
-                text += debugInfo.ToString();
+                sb.Append(debugInfo);
 
                 if (Settings.ShowCopyPrompt.Value)
                 {
-                    text += CopyHint;
+                    sb.AppendLine(debugInfo.CopyPrompt);
+                    if (!string.IsNullOrEmpty(debugInfo.AltCopyPrompt))
+                    {
+                        sb.AppendLine(debugInfo.AltCopyPrompt);
+                    }
+
+                    if (!string.IsNullOrEmpty(debugInfo.FullCopyPrompt))
+                    {
+                        sb.AppendLine(debugInfo.FullCopyPrompt);
+                    }
                 }
+
+                text += sb.ToString();
 
                 DebugTooltip.Clear();
             }
@@ -104,7 +118,7 @@ namespace DebugTooltip
                     Copier = __instance.GetOrAddComponent<TooltipCopier>();
                 }
 
-                Copier.SetText(debugInfo.ToShortString(), debugInfo.ToString());
+                Copier.SetDebugInfo(debugInfo);
 
                 if (DebugText == null)
                 {
@@ -112,12 +126,23 @@ namespace DebugTooltip
                     DebugText.color = Color.white;
                 }
 
-                DebugText.text = debugInfo.ToString();
+                StringBuilder sb = new(debugInfo.ToString());
 
                 if (Settings.ShowCopyPrompt.Value)
                 {
-                    DebugText.text += CopyHint;
+                    sb.AppendLine(debugInfo.CopyPrompt);
+                    if (!string.IsNullOrEmpty(debugInfo.AltCopyPrompt))
+                    {
+                        sb.AppendLine(debugInfo.AltCopyPrompt);
+                    }
+
+                    if (!string.IsNullOrEmpty(debugInfo.FullCopyPrompt))
+                    {
+                        sb.AppendLine(debugInfo.FullCopyPrompt);
+                    }
                 }
+
+                DebugText.text = sb.ToString();
 
                 DebugTooltip.Clear();
             }

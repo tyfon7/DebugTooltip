@@ -8,6 +8,7 @@ namespace DebugTooltip
     internal class TooltipCopier : MonoBehaviour
     {
         private string shortText;
+        private string altShortText;
         private string longText;
 
         private static PropertyInfo SystemCopyBufferProperty;
@@ -17,10 +18,11 @@ namespace DebugTooltip
             SystemCopyBufferProperty = AccessTools.Property(typeof(GUIUtility), "systemCopyBuffer");
         }
 
-        public void SetText(string id, string all)
+        public void SetDebugInfo(DebugInfo debugInfo)
         {
-            this.shortText = StripTags(id);
-            this.longText = StripTags(all);
+            this.shortText = StripTags(debugInfo.ToShortString());
+            this.altShortText = StripTags(debugInfo.ToAltShortString());
+            this.longText = StripTags(debugInfo.ToString());
         }
 
         public void Update()
@@ -29,6 +31,7 @@ namespace DebugTooltip
             {
                 var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftControl);
                 var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+                var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
 
                 if (ctrlDown && shiftDown)
                 {
@@ -39,6 +42,11 @@ namespace DebugTooltip
                 if (ctrlDown)
                 {
                     SystemCopyBufferProperty.SetValue(null, shortText, null);
+                }
+
+                if (altDown)
+                {
+                    SystemCopyBufferProperty.SetValue(null, altShortText, null);
                 }
             }
         }

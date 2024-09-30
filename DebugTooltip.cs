@@ -28,6 +28,11 @@
         {
             private readonly string text = text;
 
+            public override string ToShortString()
+            {
+                return text;
+            }
+
             public override string ToString()
             {
                 return text;

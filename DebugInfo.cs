@@ -4,24 +4,39 @@ using System.Text;
 
 using SlotItemAddress = GClass2783;
 using EmptyAddress = GClass2782;
+using System;
 
 namespace DebugTooltip
 {
     public abstract class DebugInfo()
     {
-        public virtual string ToShortString()
+        public abstract string ToShortString();
+
+        public virtual string ToAltShortString()
         {
-            return ToString();
+            return string.Empty;
         }
+
+        public virtual string CopyPrompt => "<color=grey>ctrl-c to copy ID</color>";
+        public virtual string AltCopyPrompt => null;
+        public virtual string FullCopyPrompt => null;
     }
 
     public class ItemDebugInfo(Item item) : DebugInfo
     {
         private readonly Item item = item;
 
+        public override string AltCopyPrompt => "<color=grey>ctrl-alt-c to copy Tpl</color>";
+        public override string FullCopyPrompt => "<color=grey>ctrl-shift-c to copy all</color>";
+
         public override string ToShortString()
         {
             return item?.Id;
+        }
+
+        public override string ToAltShortString()
+        {
+            return item?.TemplateId;
         }
 
         public override string ToString()
@@ -64,9 +79,18 @@ namespace DebugTooltip
     {
         private readonly Slot slot = slot;
 
+        public override string CopyPrompt => "<color=grey>ctrl-c to copy slot</color>";
+        public override string AltCopyPrompt => "<color=grey>ctrl-alt-c to copy parent ID</color>";
+        public override string FullCopyPrompt => "<color=grey>ctrl-shift-c to copy all</color>";
+
         public override string ToShortString()
         {
             return slot?.ID;
+        }
+
+        public override string ToAltShortString()
+        {
+            return slot?.ParentItem?.Id;
         }
 
         public override string ToString()
@@ -113,6 +137,8 @@ namespace DebugTooltip
     public class QuestDebugInfo(QuestClass quest) : DebugInfo
     {
         private readonly QuestClass quest = quest;
+
+        public override string FullCopyPrompt => "<color=grey>ctrl-shift-c to copy all</color>";
 
         public override string ToShortString()
         {
