@@ -2,9 +2,9 @@
 using EFT.InventoryLogic;
 using System.Text;
 
-using SlotItemAddress = GClass2783;
-using EmptyAddress = GClass2782;
-using System;
+using GridItemAddress = GClass3115;
+using SlotItemAddress = GClass3113;
+using EmptyAddress = GClass3112;
 
 namespace DebugTooltip
 {
@@ -53,7 +53,7 @@ namespace DebugTooltip
             sb.AppendFormat("Owner: <color=#ffa500>{0}</color>\n", item.Owner.ContainerName);
             sb.AppendFormat("<color=#ffa500>{0}</color>\n", item.Owner.ID);
 
-            if (item.CurrentAddress is ItemAddressClass gridAddress)
+            if (item.CurrentAddress is GridItemAddress gridAddress)
             {
                 sb.AppendFormat("Address: <color=#00ffff>({0}, {1}) {2}</color>\n", gridAddress.LocationInGrid.x, gridAddress.LocationInGrid.y, gridAddress.LocationInGrid.r);
                 sb.AppendFormat("<color=#00ffff>Grid {0}</color>\n", gridAddress.Grid.ID);
