@@ -1,11 +1,10 @@
-﻿using EFT;
+﻿using System.Text;
+using EFT;
 using EFT.InventoryLogic;
 using EFT.Quests;
-using System.Text;
-
-using EmptyAddress = GClass3112;
-using GridItemAddress = GClass3115;
-using SlotItemAddress = GClass3113;
+using EmptyAddress = GClass3183;
+using GridItemAddress = GClass3186;
+using SlotItemAddress = GClass3184;
 
 namespace DebugTooltip
 {
