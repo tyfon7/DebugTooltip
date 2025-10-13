@@ -1,10 +1,10 @@
-﻿using EFT.InventoryLogic;
+﻿using System.Reflection;
+using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using EFT.UI.WeaponModding;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -109,7 +109,7 @@ namespace DebugTooltip
                     return;
                 }
 
-                if (__instance.ContainedItemView == null)
+                if (__instance.Slot.ContainedItem == null)
                 {
                     DebugTooltip.SetDebugInfo(new EmptySlotDebugInfo(__instance.Slot));
                 }
@@ -123,7 +123,7 @@ namespace DebugTooltip
                     return;
                 }
 
-                if (__instance.ContainedItemView == null && !ItemUiContext.Instance.Tooltip.isActiveAndEnabled)
+                if (__instance.Slot.ContainedItem == null && !ItemUiContext.Instance.Tooltip.isActiveAndEnabled)
                 {
                     ItemUiContext.Instance.Tooltip.Show(string.Empty);
                 }
@@ -134,7 +134,7 @@ namespace DebugTooltip
         {
             protected override MethodBase GetTargetMethod()
             {
-                return AccessTools.Method(typeof(ModSlotView), nameof(ModSlotView.method_16));
+                return AccessTools.Method(typeof(ModSlotView), nameof(ModSlotView.method_15));
             }
 
             [PatchPostfix]

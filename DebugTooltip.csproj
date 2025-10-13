@@ -4,14 +4,14 @@
     <TargetFramework>net471</TargetFramework>
     <AssemblyName>Tyfon.DebugTooltip</AssemblyName>
     <Description>SPT Debug Tooltip</Description>
-    <Version>3.0.0</Version>
+    <Version>4.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
-    <SPTPath>..\..\..\..\SPT\3.11</SPTPath>
+    <SPTPath>..\..\..\..\SPT\4.0</SPTPath>
   </PropertyGroup>
 
   <ItemGroup>

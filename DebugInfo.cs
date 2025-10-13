@@ -2,9 +2,6 @@
 using EFT;
 using EFT.InventoryLogic;
 using EFT.Quests;
-using EmptyAddress = GClass3183;
-using GridItemAddress = GClass3186;
-using SlotItemAddress = GClass3184;
 
 namespace DebugTooltip
 {

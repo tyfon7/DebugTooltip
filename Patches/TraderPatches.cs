@@ -1,8 +1,8 @@
-﻿using EFT;
+﻿using System.Reflection;
+using EFT;
 using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System.Reflection;
 
 namespace DebugTooltip
 {
@@ -18,7 +18,7 @@ namespace DebugTooltip
         {
             protected override MethodBase GetTargetMethod()
             {
-                return AccessTools.Method(typeof(TraderCard), "UnityEngine.EventSystems.IPointerEnterHandler.OnPointerEnter");
+                return AccessTools.Method(typeof(TraderCard), nameof(TraderCard.OnPointerEnter));
             }
 
             [PatchPostfix]
@@ -38,7 +38,7 @@ namespace DebugTooltip
         {
             protected override MethodBase GetTargetMethod()
             {
-                return AccessTools.Method(typeof(TraderCard), "UnityEngine.EventSystems.IPointerExitHandler.OnPointerExit");
+                return AccessTools.Method(typeof(TraderCard), nameof(TraderCard.OnPointerExit));
             }
 
             [PatchPostfix]
