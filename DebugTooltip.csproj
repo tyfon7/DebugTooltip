@@ -99,10 +99,6 @@
   <Target Name="PostBuildRelease" AfterTargets="PostBuildEvent"
     Condition="'$(Configuration)'=='Release'">
     <Exec
-      Command='
-        mkdir "$(ProjectDir)dist\BepInEx\plugins"
-        7z a -tzip dist\$(TargetName.Replace(".", "-"))-$(Version).zip $(SolutionDir)dist\BepInEx
-      '
-    />
+      Command='7z a -tzip dist\$(TargetName.Replace(".", "-"))-$(Version).zip $(SolutionDir)dist\BepInEx' />
   </Target>
 </Project>
