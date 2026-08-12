@@ -1,22 +1,21 @@
 ﻿using BepInEx;
 
-namespace DebugTooltip
+namespace DebugTooltip;
+
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+public class Plugin : BaseUnityPlugin
 {
-    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    public class Plugin : BaseUnityPlugin
+    public void Awake()
     {
-        public void Awake()
-        {
-            R.Init();
-            Settings.Init(Config);
+        R.Init();
+        Settings.Init(Config);
 
-            new ShortcutPatch().Enable();
+        new ShortcutPatch().Enable();
 
-            TooltipPatches.Enable();
+        TooltipPatches.Enable();
 
-            ItemPatches.Enable();
-            TraderPatches.Enable();
-            QuestPatches.Enable();
-        }
+        ItemPatches.Enable();
+        TraderPatches.Enable();
+        QuestPatches.Enable();
     }
 }

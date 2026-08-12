@@ -4,53 +4,54 @@ using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace DebugTooltip
+namespace DebugTooltip;
+
+internal class TraderPatches
 {
-    internal class TraderPatches
+    public static void Enable()
     {
-        public static void Enable()
+        new TraderCardEnterPatch().Enable();
+        new TraderCardExitPatch().Enable();
+    }
+
+    private class TraderCardEnterPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
         {
-            new TraderCardEnterPatch().Enable();
-            new TraderCardExitPatch().Enable();
+            // Fully qualified because declared with the interface in the name
+            return AccessTools.Method(typeof(TraderCard), "UnityEngine.EventSystems.IPointerEnterHandler.OnPointerEnter");
         }
 
-        private class TraderCardEnterPatch : ModulePatch
+        [PatchPostfix]
+        public static void Postfix(Profile.TraderInfo ____trader)
         {
-            protected override MethodBase GetTargetMethod()
+            if (!Settings.ShowDebugInfo.Value)
             {
-                return AccessTools.Method(typeof(TraderCard), nameof(TraderCard.OnPointerEnter));
+                return;
             }
 
-            [PatchPostfix]
-            public static void Postfix(Profile.TraderInfo ___traderInfo_0)
-            {
-                if (!Settings.ShowDebugInfo.Value)
-                {
-                    return;
-                }
+            DebugTooltip.SetDebugInfo(new TraderDebugInfo(____trader));
+            ItemUiContext.Instance.Tooltip.Show(string.Empty);
+        }
+    }
 
-                DebugTooltip.SetDebugInfo(new TraderDebugInfo(___traderInfo_0));
-                ItemUiContext.Instance.Tooltip.Show(string.Empty);
-            }
+    private class TraderCardExitPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            // Fully qualified because declared with the interface in the name
+            return AccessTools.Method(typeof(TraderCard), "UnityEngine.EventSystems.IPointerExitHandler.OnPointerExit");
         }
 
-        private class TraderCardExitPatch : ModulePatch
+        [PatchPostfix]
+        public static void Postfix()
         {
-            protected override MethodBase GetTargetMethod()
+            if (!Settings.ShowDebugInfo.Value)
             {
-                return AccessTools.Method(typeof(TraderCard), nameof(TraderCard.OnPointerExit));
+                return;
             }
 
-            [PatchPostfix]
-            public static void Postfix()
-            {
-                if (!Settings.ShowDebugInfo.Value)
-                {
-                    return;
-                }
-
-                ItemUiContext.Instance.Tooltip.Close();
-            }
+            ItemUiContext.Instance.Tooltip.Close();
         }
     }
 }

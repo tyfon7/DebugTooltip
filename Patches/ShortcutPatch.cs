@@ -1,24 +1,23 @@
-﻿using EFT.UI;
+﻿using System.Reflection;
+using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System.Reflection;
 
-namespace DebugTooltip
+namespace DebugTooltip;
+
+internal class ShortcutPatch : ModulePatch
 {
-    internal class ShortcutPatch : ModulePatch
+    protected override MethodBase GetTargetMethod()
     {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.Method(typeof(ItemUiContext), nameof(ItemUiContext.Update));
-        }
+        return AccessTools.Method(typeof(ItemUiContext), nameof(ItemUiContext.Update));
+    }
 
-        [PatchPostfix]
-        public static void Postfix(ItemUiContext __instance)
+    [PatchPostfix]
+    public static void Postfix()
+    {
+        if (Settings.ToggleShortcut.Value.IsDown())
         {
-            if (Settings.ToggleShortcut.Value.IsDown())
-            {
-                Settings.ShowDebugInfo.Value = !Settings.ShowDebugInfo.Value;
-            }
+            Settings.ShowDebugInfo.Value = !Settings.ShowDebugInfo.Value;
         }
     }
 }

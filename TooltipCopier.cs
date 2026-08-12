@@ -1,59 +1,58 @@
-﻿using HarmonyLib;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
+using HarmonyLib;
 using UnityEngine;
 
-namespace DebugTooltip
+namespace DebugTooltip;
+
+internal class TooltipCopier : MonoBehaviour
 {
-    internal class TooltipCopier : MonoBehaviour
+    private string _shortText;
+    private string _altShortText;
+    private string _longText;
+
+    private static PropertyInfo SystemCopyBufferProperty;
+
+    public void Awake()
     {
-        private string shortText;
-        private string altShortText;
-        private string longText;
+        SystemCopyBufferProperty = AccessTools.Property(typeof(GUIUtility), "systemCopyBuffer");
+    }
 
-        private static PropertyInfo SystemCopyBufferProperty;
+    public void SetDebugInfo(DebugInfo debugInfo)
+    {
+        _shortText = StripTags(debugInfo.ToShortString());
+        _altShortText = StripTags(debugInfo.ToAltShortString());
+        _longText = StripTags(debugInfo.ToString());
+    }
 
-        public void Awake()
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            SystemCopyBufferProperty = AccessTools.Property(typeof(GUIUtility), "systemCopyBuffer");
-        }
+            var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftControl);
+            var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
 
-        public void SetDebugInfo(DebugInfo debugInfo)
-        {
-            this.shortText = StripTags(debugInfo.ToShortString());
-            this.altShortText = StripTags(debugInfo.ToAltShortString());
-            this.longText = StripTags(debugInfo.ToString());
-        }
-
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.C))
+            if (ctrlDown && shiftDown)
             {
-                var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftControl);
-                var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-                var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+                SystemCopyBufferProperty.SetValue(null, _longText, null);
+                return;
+            }
 
-                if (ctrlDown && shiftDown)
-                {
-                    SystemCopyBufferProperty.SetValue(null, longText, null);
-                    return;
-                }
+            if (ctrlDown)
+            {
+                SystemCopyBufferProperty.SetValue(null, _shortText, null);
+            }
 
-                if (ctrlDown)
-                {
-                    SystemCopyBufferProperty.SetValue(null, shortText, null);
-                }
-
-                if (altDown)
-                {
-                    SystemCopyBufferProperty.SetValue(null, altShortText, null);
-                }
+            if (altDown)
+            {
+                SystemCopyBufferProperty.SetValue(null, _altShortText, null);
             }
         }
+    }
 
-        private string StripTags(string input)
-        {
-            return Regex.Replace(input, "</?color[^>]*>", string.Empty);
-        }
+    private string StripTags(string input)
+    {
+        return Regex.Replace(input, "</?color[^>]*>", string.Empty);
     }
 }
